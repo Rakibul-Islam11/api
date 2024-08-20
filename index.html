@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-2xl font-bold mb-4">Weather Information</h1>
+            <input type="text" id="city" class="border border-gray-300 rounded p-2 w-full mb-4"
+                placeholder="Enter city name">
+            <button id="fetchWeather" class="bg-blue-500 text-white py-2 px-4 rounded">Get Weather</button>
+            <div id="weatherInfo" class="mt-4"></div>
+        </div>
+
+        <script>
+            document.getElementById('fetchWeather').addEventListener('click', function () {
+                const city = document.getElementById('city').value.trim(); // Trim whitespace
+                if (city === '') {
+                    document.getElementById('weatherInfo').innerHTML = '<p class="text-red-500">Please enter a city name</p>';
+                    return;
+                }
+
+                const apiKey = 'b771fbb5aca44e64b65b4b323dbd36d8';  // OpenWeatherMap API Key
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cod === 200) {
+                            const weatherInfo = `
+                            <h2 class="text-xl font-semibold">${data.name}, ${data.sys.country}</h2>
+                            <p class="text-gray-700">Temperature: ${data.main.temp} °C</p>
+                            <p class="text-gray-700">Weather: ${data.weather[0].description}</p>
+                            <p class="text-gray-700">Humidity: ${data.main.humidity}%</p>
+                            <p class="text-gray-700">Wind Speed: ${data.wind.speed} m/s</p>
+                        `;
+                            document.getElementById('weatherInfo').innerHTML = weatherInfo;
+                        } else {
+                            document.getElementById('weatherInfo').innerHTML = '<p class="text-red-500">City not found</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('weatherInfo').innerHTML = '<p class="text-red-500">An error occurred</p>';
+                    });
+            });
+        </script>
+    </body>
+
+</html>
